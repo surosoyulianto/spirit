@@ -1,0 +1,27 @@
+- [x] Update Product model with fillable attributes and relationship to InvoiceItem
+- [x] Update InvoiceItem model with product_id in fillable and relationship to Product
+- [x] Create ProductController with CRUD methods
+- [x] Create product views (index, create, show, edit)
+- [x] Update InvoiceController to load products, validate product_id, reduce stock
+- [x] Update invoice create form to select products from dropdown
+- [x] Add product routes to web.php
+- [x] Update navigation in app.blade.php to include inventory menu
+- [x] Run the new migration
+- [x] Test creating invoice reduces stock
+- [x] Add validation for stock availability
+- [x] Fix ProductController undefined type error - Created ProductController.php, added use statement in routes/web.php, and created missing product views (index, create, edit)
+=======
+- [x] Create migration to add product_id to invoice_items table
+- [x] Update Product model with fillable attributes and relationship to InvoiceItem
+- [x] Update InvoiceItem model with product_id in fillable and relationship to Product
+- [x] Create ProductController with CRUD methods
+- [x] Create product views (index, create, show, edit)
+- [x] Update InvoiceController to load products, validate product_id, reduce stock
+- [x] Update invoice create form to select products from dropdown
+- [x] Add product routes to web.php
+- [x] Update navigation in app.blade.php to include inventory menu
+- [x] Run the new migration
+- [x] Test creating invoice reduces stock
+- [x] Add validation for stock availability
+- [x] Fix ProductController undefined type error - Created ProductController.php, added use statement in routes/web.php, and created missing product views (index, create, edit)
+- [x] Fix navigation links not clickable - Removed wire:navigate from all nav links since they point to regular Laravel routes, not Livewire components
