@@ -10,9 +10,51 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::latest()->paginate(10);
+        $query = Product::query();
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        // Category filter
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        // Stock status filter
+        if ($request->filled('stock_status')) {
+            if ($request->stock_status == 'low') {
+                // Low Stock: stock <= min_stock_level (default 10)
+                $query->where('stock', '>', 0)
+                      ->whereRaw('stock <= COALESCE(min_stock_level, 10)');
+            } elseif ($request->stock_status == 'out') {
+                // Out of Stock: stock = 0
+                $query->where('stock', 0);
+            } elseif ($request->stock_status == 'in') {
+                // In Stock: stock > min_stock_level
+                $query->whereRaw('stock > COALESCE(min_stock_level, 10)');
+            }
+        }
+
+        // Active status filter
+        if ($request->filled('status')) {
+            if ($request->status == 'active') {
+                $query->where('is_active', true);
+            } elseif ($request->status == 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        $products = $query->latest()->paginate(10);
+        $products->appends($request->query());
+
         return view('products.index', compact('products'));
     }
 

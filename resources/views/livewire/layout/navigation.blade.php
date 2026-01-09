@@ -33,16 +33,19 @@ new class extends Component
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link wire:navigate :href="route('products.index')" :active="request()->routeIs('products.*')">
+                    <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
                         {{ __('Inventory') }}
                     </x-nav-link>
-                    <x-nav-link wire:navigate :href="route('invoices.index')" :active="request()->routeIs('invoices.*')">
+                    <x-nav-link :href="route('inventories.index')" :active="request()->routeIs('inventories.*')">
+                        {{ __('Movements') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.*')">
                         {{ __('Invoices') }}
                     </x-nav-link>
-                    <x-nav-link wire:navigate :href="route('manufacturing.index')" :active="request()->routeIs('manufacturing.*')">
+                    <x-nav-link :href="route('manufacturing.index')" :active="request()->routeIs('manufacturing.*')">
                         {{ __('Manufacturing') }}
                     </x-nav-link>
-                    <x-nav-link wire:navigate :href="route('pos.index')" :active="request()->routeIs('pos.*')">
+                    <x-nav-link :href="route('pos.index')" :active="request()->routeIs('pos.*')">
                         {{ __('POS') }}
                     </x-nav-link>
                 </div>
@@ -96,16 +99,19 @@ new class extends Component
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link wire:navigate :href="route('products.index')" :active="request()->routeIs('products.*')">
+                <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
                     {{ __('Inventory') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link wire:navigate :href="route('invoices.index')" :active="request()->routeIs('invoices.*')">
+                <x-responsive-nav-link :href="route('inventories.index')" :active="request()->routeIs('inventories.*')">
+                    {{ __('Movements') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.*')">
                     {{ __('Invoices') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link wire:navigate :href="route('manufacturing.index')" :active="request()->routeIs('manufacturing.*')">
+                <x-responsive-nav-link :href="route('manufacturing.index')" :active="request()->routeIs('manufacturing.*')">
                     {{ __('Manufacturing') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link wire:navigate :href="route('pos.index')" :active="request()->routeIs('pos.*')">
+                <x-responsive-nav-link :href="route('pos.index')" :active="request()->routeIs('pos.*')">
                     {{ __('POS') }}
                 </x-responsive-nav-link>
             </div>

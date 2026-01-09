@@ -54,7 +54,7 @@
                             <input type="number" name="items[0][unit_price]" class="unit-price-input border p-2 rounded w-full" step="0.01" min="0" readonly required>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-1">Subtotal</label>
+                            <label class="block text-sm font-semibold mb-1">Total Price</label>
                             <input type="number" name="items[0][subtotal]" class="subtotal-input border p-2 rounded w-full" step="0.01" readonly>
                         </div>
                     </div>

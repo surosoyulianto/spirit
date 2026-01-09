@@ -8,10 +8,13 @@ class ManufacturingOrder extends Model
 {
     // Jika semua kolom di database bisa diisi langsung
     protected $fillable = [
-        'id_order',
-        'product',
+        'mo_number',
+        'product_id',
         'quantity',
         'status',
+        'scheduled_date',
+        'notes',
+        'completed_date',
     ];
 
     // (Opsional) Jika kamu ingin pakai enum status dan tampilkan badge
@@ -25,5 +28,101 @@ class ManufacturingOrder extends Model
             'cancelled' => 'bg-red-100 text-red-700',
             default => 'bg-gray-100 text-gray-700',
         };
+    }
+
+    /**
+     * Relationship: ManufacturingOrder belongs to Product (finished goods)
+     */
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Relationship: ManufacturingOrder has many Inventory movements
+     */
+    public function inventories()
+    {
+        return $this->hasMany(Inventory::class, 'reference_id')->where('reference_type', 'manufacturing_order');
+    }
+
+    /**
+     * Check if MO can be started
+     */
+    public function canStart(): bool
+    {
+        return in_array($this->status, ['draft', 'confirmed']);
+    }
+
+    /**
+     * Check if MO can be completed
+     */
+    public function canComplete(): bool
+    {
+        return $this->status === 'in_progress';
+    }
+
+    /**
+     * Check if MO can be cancelled
+     */
+    public function canCancel(): bool
+    {
+        return !in_array($this->status, ['done', 'cancelled']);
+    }
+
+    /**
+     * Get available status transitions
+     */
+    public function getAvailableTransitions(): array
+    {
+        return match ($this->status) {
+            'draft' => ['confirmed', 'cancelled'],
+            'confirmed' => ['in_progress', 'cancelled'],
+            'in_progress' => ['done', 'cancelled'],
+            default => [],
+        };
+    }
+
+    /**
+     * Transition to new status with inventory actions
+     */
+    public function transitionTo($newStatus)
+    {
+        // Validate transition
+        if (!in_array($newStatus, $this->getAvailableTransitions())) {
+            return false;
+        }
+
+        // Handle inventory actions based on status change
+        if ($newStatus === 'in_progress') {
+            // Starting production - could deduct raw materials here
+            // For now, just log
+        }
+
+        if ($newStatus === 'done') {
+            // Production complete - add finished goods to inventory
+            $this->product->increment('stock', $this->quantity);
+
+            // Record inventory movement
+            Inventory::recordMovement(
+                $this->product_id,
+                $this->quantity,
+                'in',
+                "Production completion: {$this->mo_number}",
+                'manufacturing_order',
+                $this->id
+            );
+        }
+
+        if ($newStatus === 'cancelled' && $this->status === 'in_progress') {
+            // If cancelled during production, could return raw materials
+        }
+
+        $this->update([
+            'status' => $newStatus,
+            'completed_date' => $newStatus === 'done' ? now()->toDateString() : null,
+        ]);
+
+        return true;
     }
 }
