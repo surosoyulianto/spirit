@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ManufacturingOrder extends Model
 {
@@ -36,6 +37,16 @@ class ManufacturingOrder extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Relationship: ManufacturingOrder has many materials (raw materials) with pivot quantity
+     */
+    public function materials(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'manufacturing_order_materials')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
     }
 
     /**
@@ -95,8 +106,23 @@ class ManufacturingOrder extends Model
 
         // Handle inventory actions based on status change
         if ($newStatus === 'in_progress') {
-            // Starting production - could deduct raw materials here
-            // For now, just log
+            // Starting production - deduct raw materials from inventory
+            foreach ($this->materials as $material) {
+                $pivotQuantity = $material->pivot->quantity * $this->quantity;
+                
+                // Deduct raw material stock
+                $material->decrement('stock', $pivotQuantity);
+                
+                // Record inventory movement
+                Inventory::recordMovement(
+                    $material->id,
+                    $pivotQuantity,
+                    'out',
+                    "Production started: {$this->mo_number} (Raw material)",
+                    'manufacturing_order',
+                    $this->id
+                );
+            }
         }
 
         if ($newStatus === 'done') {
@@ -108,14 +134,30 @@ class ManufacturingOrder extends Model
                 $this->product_id,
                 $this->quantity,
                 'in',
-                "Production completion: {$this->mo_number}",
+                "Production completed: {$this->mo_number}",
                 'manufacturing_order',
                 $this->id
             );
         }
 
         if ($newStatus === 'cancelled' && $this->status === 'in_progress') {
-            // If cancelled during production, could return raw materials
+            // If cancelled during production, return raw materials to inventory
+            foreach ($this->materials as $material) {
+                $pivotQuantity = $material->pivot->quantity * $this->quantity;
+                
+                // Return raw material stock
+                $material->increment('stock', $pivotQuantity);
+                
+                // Record inventory movement
+                Inventory::recordMovement(
+                    $material->id,
+                    $pivotQuantity,
+                    'in',
+                    "Production cancelled (materials returned): {$this->mo_number}",
+                    'manufacturing_order',
+                    $this->id
+                );
+            }
         }
 
         $this->update([
@@ -124,5 +166,17 @@ class ManufacturingOrder extends Model
         ]);
 
         return true;
+    }
+
+    /**
+     * Calculate total material cost
+     */
+    public function getTotalMaterialCostAttribute(): float
+    {
+        $total = 0;
+        foreach ($this->materials as $material) {
+            $total += $material->price * ($material->pivot->quantity * $this->quantity);
+        }
+        return $total;
     }
 }

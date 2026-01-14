@@ -37,11 +37,22 @@ class ManufacturingOrderController extends Controller
             'status' => 'draft',
         ]);
 
+        // Attach materials (raw materials used in production)
+        if ($request->has('materials') && is_array($request->materials)) {
+            foreach ($request->materials as $materialId => $materialData) {
+                if (!empty($materialData['quantity']) && $materialData['quantity'] > 0) {
+                    $mo->materials()->attach($materialId, [
+                        'quantity' => $materialData['quantity']
+                    ]);
+                }
+            }
+        }
+
         // Record inventory movement for planned production
         Inventory::recordMovement(
             $request->product_id,
             $request->quantity,
-            'in',
+            'reserved',
             "Manufacturing Order planned: {$mo->mo_number}",
             'manufacturing_order',
             $mo->id

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
@@ -36,6 +37,16 @@ class Product extends Model
     public function manufacturingOrders()
     {
         return $this->hasMany(ManufacturingOrder::class, 'product_id');
+    }
+
+    /**
+     * Relationship: Product belongs to many ManufacturingOrders as a raw material
+     */
+    public function manufacturingMaterials(): BelongsToMany
+    {
+        return $this->belongsToMany(ManufacturingOrder::class, 'manufacturing_order_materials')
+                    ->withPivot('quantity')
+                    ->withTimestamps();
     }
 
     /**

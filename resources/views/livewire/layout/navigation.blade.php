@@ -34,10 +34,10 @@ new class extends Component
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                        {{ __('Inventory') }}
+                        {{ __('Product') }}
                     </x-nav-link>
                     <x-nav-link :href="route('inventories.index')" :active="request()->routeIs('inventories.*')">
-                        {{ __('Movements') }}
+                        {{ __('Inventory') }}
                     </x-nav-link>
                     <x-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.*')">
                         {{ __('Invoices') }}
@@ -100,10 +100,10 @@ new class extends Component
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                    {{ __('Inventory') }}
+                    {{ __('Product') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('inventories.index')" :active="request()->routeIs('inventories.*')">
-                    {{ __('Movements') }}
+                    {{ __('Inventory') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.*')">
                     {{ __('Invoices') }}
